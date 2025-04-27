@@ -277,6 +277,62 @@ This happens when the SSH server's fingerprint has changed from what's stored in
 
    **Note**: This reduces security by disabling host key verification, so only use it in trusted environments.
 
+### Troubleshooting "'exec' is not recognized" error after ssh-copy-id
+
+If you successfully add your SSH key using `ssh-copy-id` but see an error message like this:
+
+```
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+user@hostname's password:
+'exec' is not recognized as an internal or external command,
+operable program or batch file.
+
+Number of key(s) added:        1
+```
+
+**What's happening:**
+This error occurs when connecting to a Windows SSH server (not WSL). The `ssh-copy-id` command successfully adds your key, but then tries to run a command using `exec` which exists in Linux/Unix but not in Windows.
+
+**Is this a problem?**
+No, you can safely ignore this error. Your SSH key was successfully installed as indicated by "Number of key(s) added: 1". The error happens after the key installation is complete.
+
+**Next steps:**
+
+1. Try logging in with SSH as suggested:
+   ```bash
+   ssh user@hostname
+   ```
+
+   Or with the suggested options:
+   ```bash
+   ssh -o 'StrictHostKeyChecking=no' 'user@hostname'
+   ```
+
+2. If you're connecting to a Windows SSH server (not WSL), you may need to:
+   - Ensure the SSH service is running on Windows:
+     ```powershell
+     # Run in PowerShell as Administrator
+     Get-Service -Name sshd | Select Status
+     # If not running:
+     Start-Service sshd
+     # To set it to start automatically:
+     Set-Service -Name sshd -StartupType 'Automatic'
+     ```
+
+   - Check that your key was added to the correct authorized_keys file:
+     ```powershell
+     # Run in PowerShell
+     type C:\Users\username\.ssh\authorized_keys
+     # Or for system-wide configuration:
+     type C:\ProgramData\ssh\administrators_authorized_keys
+     ```
+
+3. If you're still having trouble connecting, check the Windows Event Viewer for SSH-related logs:
+   - Open Event Viewer
+   - Navigate to Windows Logs > Application
+   - Look for events with "ssh" or "sshd" as the source
+
 ## What we've accomplished
 
 Great job! You've now:
