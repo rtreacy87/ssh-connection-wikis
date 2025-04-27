@@ -215,6 +215,68 @@ If you have trouble connecting:
    netsh interface portproxy show all
    ```
 
+### Troubleshooting "Host key verification failed" error
+
+If you see an error like this:
+
+```
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+...
+Host key verification failed.
+```
+
+This happens when the SSH server's fingerprint has changed from what's stored in your `~/.ssh/known_hosts` file. This can occur for several legitimate reasons:
+
+- You reinstalled the operating system on your Windows machine
+- You reinstalled or reconfigured the SSH server in WSL
+- The WSL instance was reset or recreated
+- The IP address is being reused for a different machine
+
+**How to fix it:**
+
+1. Remove the old host key from your Mac's known_hosts file:
+   ```bash
+   ssh-keygen -R 192.168.1.5
+   ```
+
+   Replace `192.168.1.5` with your Windows computer's IP address. If you're using a hostname in your SSH config, also run:
+   ```bash
+   ssh-keygen -R windows-wsl
+   ```
+
+2. If you're using `ssh-copy-id` and still getting the error, you can force it to ignore the known hosts check:
+   ```bash
+   ssh-copy-id -o StrictHostKeyChecking=no your-ubuntu-username@192.168.1.5
+   ```
+
+3. Try connecting again. You'll be asked to confirm the new fingerprint:
+   ```
+   The authenticity of host '192.168.1.5 (192.168.1.5)' can't be established.
+   ED25519 key fingerprint is SHA256:abcdefghijklmnopqrstuvwxyz123456789.
+   Are you sure you want to continue connecting (yes/no/[fingerprint])?
+   ```
+
+4. **For maximum security**: Before typing "yes", verify the fingerprint is correct by checking it on your Windows/WSL system:
+   ```bash
+   # Run this in WSL
+   sudo ssh-keygen -l -f /etc/ssh/ssh_host_ed25519_key.pub
+   ```
+
+   Compare this fingerprint with what's shown in the connection prompt. If they match, type "yes" to continue.
+
+5. If you frequently rebuild your WSL environment and don't want to deal with this warning, you can add this to your SSH config file:
+   ```
+   Host windows-wsl
+       StrictHostKeyChecking no
+   ```
+
+   **Note**: This reduces security by disabling host key verification, so only use it in trusted environments.
+
 ## What we've accomplished
 
 Great job! You've now:
