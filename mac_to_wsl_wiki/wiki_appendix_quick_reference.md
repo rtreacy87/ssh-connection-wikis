@@ -161,6 +161,7 @@ Connection issue
 
 ## Security Checklist
 
+### SSH Security
 - [ ] Disable password authentication
 - [ ] Use strong SSH keys (ED25519 or RSA 4096-bit)
 - [ ] Set proper permissions on SSH keys and config files
@@ -171,6 +172,18 @@ Connection issue
 - [ ] Regularly check logs for unauthorized access attempts
 - [ ] Use a non-standard SSH port (optional)
 - [ ] Back up SSH configuration
+
+### Windows Host Security
+- [ ] Use a strong Windows password
+- [ ] Enable Windows Hello biometric authentication
+- [ ] Configure account lockout policies
+- [ ] Keep Windows updated
+- [ ] Enable Windows Security (antivirus)
+- [ ] Configure Windows Firewall
+- [ ] Enable controlled folder access (ransomware protection)
+- [ ] Secure Remote Desktop (if used)
+- [ ] Enable Network Level Authentication
+- [ ] Limit users with remote access privileges
 
 ## Useful Resources
 

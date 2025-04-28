@@ -8,6 +8,7 @@ In this guide, we'll improve the security of your SSH connection by:
 2. Setting up fail2ban to protect against brute force attacks
 3. Configuring SSH timeout settings
 4. Implementing other security best practices
+5. Securing the Windows host machine running WSL
 
 ## Why security matters
 
@@ -278,15 +279,91 @@ If you can't connect after making these changes:
    - Edit the SSH configuration: `sudo nano /etc/ssh/sshd_config`
    - Change the settings back and restart SSH: `sudo service ssh restart`
 
+## Step 6: Secure your Windows host machine
+
+Since your WSL environment runs on a Windows host, it's equally important to secure the Windows machine itself. If an attacker gains access to your Windows system, they could potentially access your WSL environment regardless of your SSH security settings.
+
+### 6.1: Strengthen Windows login security
+
+1. Use a strong password for your Windows user account:
+   - At least 12 characters long
+   - Mix of uppercase and lowercase letters, numbers, and special characters
+   - Avoid common words or easily guessable information
+
+2. Enable Windows Hello for biometric authentication (if your hardware supports it):
+   - Open Windows Settings > Accounts > Sign-in options
+   - Set up fingerprint, facial recognition, or PIN as additional authentication methods
+   - This provides an extra layer of security beyond just passwords
+
+3. Enable account lockout policies:
+   - Open Local Security Policy (search for "secpol.msc" in the Start menu)
+   - Navigate to Account Policies > Account Lockout Policy
+   - Set "Account lockout threshold" to 5 attempts
+   - Set "Account lockout duration" to 30 minutes
+   - Set "Reset account lockout counter after" to 30 minutes
+
+### 6.2: Keep Windows updated
+
+Regularly update Windows to protect against known vulnerabilities:
+
+1. Enable automatic updates:
+   - Open Windows Settings > Update & Security > Windows Update
+   - Click "Advanced options"
+   - Enable "Receive updates for other Microsoft products"
+   - Set active hours so updates don't interrupt your work
+
+2. Regularly check for updates manually:
+   - Open Windows Settings > Update & Security > Windows Update
+   - Click "Check for updates"
+   - Install any available updates
+
+### 6.3: Use Windows security features
+
+1. Ensure Windows Security (formerly Windows Defender) is active:
+   - Open Windows Security from the Start menu
+   - Check that all protection areas show green checkmarks
+   - Run periodic full scans of your system
+
+2. Enable controlled folder access to protect against ransomware:
+   - Open Windows Security > Virus & threat protection
+   - Under Ransomware protection, click "Manage ransomware protection"
+   - Turn on "Controlled folder access"
+
+3. Enable Windows Firewall:
+   - Open Windows Security > Firewall & network protection
+   - Ensure firewall is enabled for all network types (Domain, Private, Public)
+   - Only allow the specific ports needed for SSH (as configured earlier)
+
+### 6.4: Secure remote access to Windows
+
+If you're using Remote Desktop or other remote access tools to connect to your Windows machine:
+
+1. Use a non-standard port for Remote Desktop (if enabled):
+   - Open Registry Editor (regedit)
+   - Navigate to HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+   - Modify the "PortNumber" value (default is 3389)
+   - Update your firewall rules accordingly
+
+2. Enable Network Level Authentication (NLA):
+   - Open System Properties (right-click on This PC > Properties)
+   - Click "Remote settings"
+   - Check "Allow remote connections to this computer"
+   - Ensure "Allow connections only from computers running Remote Desktop with Network Level Authentication" is checked
+
+3. Limit Remote Desktop users:
+   - In the Remote settings dialog, click "Select Users"
+   - Only add users who absolutely need remote access
+
 ## What we've accomplished
 
 Great job! You've now:
 - Disabled password authentication for better security
 - Set up fail2ban to protect against brute force attacks
 - Configured SSH timeout settings
-- Implemented additional security measures
+- Implemented additional security measures for your SSH connection
+- Secured your Windows host machine that runs WSL
 
-Your SSH connection is now much more secure against common threats.
+Your entire setup is now much more secure against common threats, protecting both your WSL environment and the Windows host it runs on.
 
 ## What's next?
 
